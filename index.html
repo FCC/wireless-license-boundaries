@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset=utf-8 />
+<title>Wireless License Boundaries</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css' rel='stylesheet' />
+<style>
+  body { margin:0; padding:0; }
+  #map { position:absolute; top:0; bottom:0; width:100%; }
+</style>
+</head>
+
+<body>
+
+<nav id='menu-ui' class='menu-ui'></nav>
+<div id='map'></div>
+
+<style>
+.menu-ui {
+  background:#fff;
+  position:absolute;
+  top:10px;right:10px;
+  z-index:1;
+  border-radius:3px;
+  width:120px;
+  border:1px solid rgba(0,0,0,0.4);
+  }
+  .menu-ui a {
+    font-size:13px;
+    color:#404040;
+    display:block;
+    margin:0;padding:0;
+    padding:10px;
+    text-decoration:none;
+    border-bottom:1px solid rgba(0,0,0,0.25);
+    text-align:center;
+    }
+    .menu-ui a:first-child {
+      border-radius:3px 3px 0 0;
+      }
+    .menu-ui a:last-child {
+      border:none;
+      border-radius:0 0 3px 3px;
+      }
+    .menu-ui a:hover {
+      background:#f8f8f8;
+      color:#404040;
+      }
+    .menu-ui a.active {
+      background:#3887BE;
+      color:#FFF;
+      }
+      .menu-ui a.active:hover {
+        background:#3074a4;
+        }
+</style>
+
+<script>
+var map = L.mapbox.map('map', 'fcc20554.j3dn6o7j').setView([35,-96], 4);
+var layers = document.getElementById('menu-ui');
+
+addLayer('fcc20554.WLB_BTA', 'BTA', 4);
+addLayer('fcc20554.WLB_CMA', 'CMA', 6);
+addLayer('fcc20554.WLB_County', 'County',7);
+addLayer('fcc20554.WLB_EA', 'EA', 3);
+addLayer('fcc20554.WLB_MTA', 'MTA', 2);
+addLayer('fcc20554.WLB_PEA', 'PEA', 5);
+addLayer('fcc20554.WLB_State', 'State', 1);
+
+function addLayer(id, name, zIndex) {
+
+    var tileLayer = L.mapbox.tileLayer(id);
+    var gridLayer = L.mapbox.gridLayer(id);
+    var gridControl = L.mapbox.gridControl(gridLayer, {follow: true});
+
+    // set the zIndex of the layer (controls which shows up on top)
+    tileLayer.setZIndex(zIndex);
+    
+    // create the control for the layer
+    var link = document.createElement('a');
+    link.href = '#';
+    link.className = '';
+    link.innerHTML = name;
+    
+    // invoked when layer control is clicked
+    link.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (map.hasLayer(tileLayer)) {
+            map.removeLayer(tileLayer);
+            map.removeLayer(gridLayer);
+	    map.removeLayer(gridControl);
+            this.className = '';
+  	} else {
+            map.addLayer(tileLayer);
+	    map.addLayer(gridLayer);
+            map.addLayer(gridControl);
+            this.className = 'active';
+        }
+    };
+
+    layers.appendChild(link);
+}
+
+</script>
+
+</body>
+</html>
